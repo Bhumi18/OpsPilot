@@ -1,5 +1,7 @@
 import logging
 from fastapi import FastAPI
+
+from app.api.v1.payments import router as payments_router
 from app.core.config import settings
 from app.core.logging import setup_logging
 
@@ -14,6 +16,9 @@ app = FastAPI(
 )
 
 logger.info(f"Starting {settings.APP_NAME} in [{settings.ENVIRONMENT}] environment")
+
+# Mount Payments API router
+app.include_router(payments_router)
 
 
 @app.get("/health")

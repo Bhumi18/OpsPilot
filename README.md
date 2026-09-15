@@ -12,14 +12,21 @@ The ultimate objective of OpsPilot is to automate complex, time-consuming incide
 
 ---
 
-## 🚀 Step 1 Implementation Summary
-In this initial step, we established the foundational FastAPI backend architecture:
-* **FastAPI Application Setup**: Minimal web backend running on `app/main.py`.
+## 🚀 Progress & Implementation Steps
+
+### Step 1: Backend Foundation
+* **FastAPI Application Setup**: Web backend running on `app/main.py`.
 * **Health Check Endpoint**: `GET /health` returning service status.
 * **Environment Configuration**: Decoupled config management via `pydantic-settings`.
-* **Basic Logging**: Configurable log streaming to standard output.
-* **Automated Testing**: Unit test suite using `pytest` and FastAPI `TestClient`.
-* **Folder Architecture**: Modular layout (`api/`, `core/`, `models/`, `schemas/`, `services/`) ready for incremental capability additions in upcoming steps.
+* **Logging & Testing**: Standard stdout logging and initial `pytest` test suite.
+
+### Step 2: Simulated Payment Service (Production System Simulation)
+* **Pydantic Schemas** (`app/schemas/payment.py`): Validation for `CreatePaymentRequest` and response formatting for `PaymentResponse`.
+* **Domain Model** (`app/models/payment.py`): `PaymentModel` dataclass representing stored payment records.
+* **Repository Layer** (`app/repositories/payment_repository.py`): In-memory storage abstraction with `create`, `get_by_id`, and `get_all` operations.
+* **Service Layer** (`app/services/payment_service.py`): Core payment processing logic, deterministic status resolution, latency tracking (`processing_time_ms`), and structured logging.
+* **API Layer** (`app/api/v1/payments.py`): RESTful endpoints (`POST /payments`, `GET /payments/{payment_id}`, `GET /payments`).
+* **Automated Tests** (`tests/test_payments.py`): Tests covering creation, retrieval, listing, 404 handling, and validation errors (422).
 
 ---
 
@@ -66,12 +73,13 @@ uvicorn app.main:app --reload --port 8000
 
 Once running, access:
 * **Health Check**: `http://127.0.0.1:8000/health`
+* **Create Payment**: `POST http://127.0.0.1:8000/payments`
+* **List Payments**: `GET http://127.0.0.1:8000/payments`
 * **Interactive API Docs (Swagger UI)**: `http://127.0.0.1:8000/docs`
-* **Alternative API Docs (ReDoc)**: `http://127.0.0.1:8000/redoc`
 
 ### 5. Run Automated Tests
 Execute the test suite using `pytest`:
 
 ```bash
-PYTHONPATH=. pytest
+python -m pytest
 ```
