@@ -3,8 +3,8 @@ import time
 import uuid
 from typing import List, Optional
 
-from app.models.payment import PaymentModel, PaymentStatus
-from app.repositories.payment_repository import PaymentRepository, payment_repository
+from app.models.payment import Payment, PaymentStatus
+from app.repositories.payment_repository import PaymentRepository
 from app.schemas.payment import CreatePaymentRequest, PaymentResponse
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class PaymentService:
     """Service layer executing business logic for payment processing."""
 
-    def __init__(self, repo: PaymentRepository = payment_repository) -> None:
+    def __init__(self, repo: PaymentRepository) -> None:
         self.repo = repo
 
     def create_payment(self, request: CreatePaymentRequest) -> PaymentResponse:
@@ -34,18 +34,18 @@ class PaymentService:
         end_time = time.perf_counter()
         processing_time_ms = round((end_time - start_time) * 1000, 2)
 
-        payment_model = PaymentModel(
+        payment = Payment(
             payment_id=payment_id,
             customer_id=request.customer_id,
             amount=request.amount,
             currency=request.currency,
-            status=status,
+            status=status.value,
             processing_time_ms=processing_time_ms
         )
 
-        saved_payment = self.repo.create(payment_model)
+        saved_payment = self.repo.create(payment)
         logger.info(
-            f"Payment created: id={saved_payment.payment_id}, status={saved_payment.status.value}, "
+            f"Payment created: id={saved_payment.payment_id}, status={saved_payment.status}, "
             f"amount={saved_payment.amount} {saved_payment.currency}, latency={saved_payment.processing_time_ms}ms"
         )
 
